@@ -65,3 +65,26 @@ async.filter = function(array, func, callback) {
 
   }
 }
+
+async.detect = function(array, func, callback) {
+  var returned = false;
+  var processed = 0;
+  callback = callback || function(){};
+
+  for (var i = 0; i < array.length; i++){
+
+    (function(ix){
+      func(array[ix], function(found){
+        if(found && !returned) {
+          returned = true;
+          callback(array[ix]);
+        } else {
+          if(++processed === array.length && !returned){
+            callback();
+          }
+        }
+      });
+    })(i);
+
+  }
+}
