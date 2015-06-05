@@ -38,27 +38,31 @@ async.map = function(array, func, callback){
 async.filter = function(array, func, callback) {
   var results = [];
   var filtered = [];
+  var processed = 0;
+  callback = callback || function(){};
 
   //once all async calls have returned filter out the elements that
   //failed the truth test
   var doCallback = function(){
-    for (var i = 0; i < result.length; i++) {
+    for (var i = 0; i < results.length; i++) {
       if (results[i]) {
         filtered.push(array[i]);
       }
     }
-    return filtered;
+    callback(filtered);
   };
 
   for (var i = 0; i < array.length; i++){
 
-    //returned boolean value is considered the result of the trush test
-    func(array[i], function(err, bool){
-      results.push(bool);
+    (function(ix){
+      func(array[ix], function(bool){
+        results[ix] = bool;
 
-      if(results.length === array.length){
-        doCallback();
-      }
-    });
+        if(processed === array.length){
+          doCallback();
+        }
+      });
+    })(i);
+
   }
 }
