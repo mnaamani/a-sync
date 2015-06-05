@@ -36,7 +36,7 @@ async.filter = function(array, func, callback) {
   //failed the truth test
   var doCallback = function(){
     for (var i = 0; i < result.length; i++) {
-      if (array[i]) {
+      if (results[i]) {
         filtered.push(array[i]);
       }
     }
