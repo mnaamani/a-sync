@@ -22,10 +22,9 @@ async.map = function(array, func, callback){
         } else{
 
           results[ix] = result;
-          processed++;
 
           //check if we processed all array elements
-          if (processed === array.length) {
+          if (++processed === array.length) {
             callback(null, results);
           }
         }
@@ -58,7 +57,7 @@ async.filter = function(array, func, callback) {
       func(array[ix], function(bool){
         results[ix] = bool;
 
-        if(processed === array.length){
+        if(++processed === array.length){
           doCallback();
         }
       });
