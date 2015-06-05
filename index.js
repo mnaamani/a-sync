@@ -6,29 +6,31 @@ async.map = function(array, func, callback){
 
   var results = [];
   var keepGoing = true;
-
+  var processed = 0;
   //callback is optional
   callback = callback || function() {};
 
-  for (var i = 0; i < array.length && keepGoing; i++){
+  for (var i = 0; i < array.length && keepGoing; i++) {
 
-    func(array[i], function(err, result){
-      if (err) {
-        //stop iterating and callback immediately
-        keepGoing = false;
-        callback(err);
+    (function(ix){
+      func(array[ix], function(err, result){
+        if (err) {
+          //stop iterating and callback immediately
+          keepGoing = false;
+          callback(err);
 
-      } else{
+        } else{
 
-        //todo - need to preserve order of transformed array
-        results.push(result);
-        //check if we processed all array elements
-        if(keepGoing && results.length === array.length){
-          callback(error, results);
+          results[ix] = result;
+          processed++;
+
+          //check if we processed all array elements
+          if (processed === array.length) {
+            callback(null, results);
+          }
         }
-      }
-    });
-
+      });
+    })(i);
   }
 };
 
