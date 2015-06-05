@@ -1,29 +1,34 @@
 var async = {};
 
+// https://github.com/caolan/async#map
+
 async.map = function(array, func, callback){
 
   var results = [];
-  var error;
+  var keepGoing = true;
 
-  for (var i = 0; i < array.length; i++){
+  //callback is optional
+  callback = callback || function() {};
+
+  for (var i = 0; i < array.length && keepGoing; i++){
 
     func(array[i], function(err, result){
-      //store error if we encounter one
-      //it will only be the last encountered one
-      //or should we throw it ?
       if (err) {
-        error = err;
-      }
+        //stop iterating and callback immediately
+        keepGoing = false;
+        callback(err);
 
-      //push into our results array - even if it is undefined
-      //to keep track of all calls to func
-      results.push(result);
+      } else{
 
-      //check if we processed all array elements
-      if(results.length === array.length){
-        callback(error, results);
+        //todo - need to preserve order of transformed array
+        results.push(result);
+        //check if we processed all array elements
+        if(keepGoing && results.length === array.length){
+          callback(error, results);
+        }
       }
     });
+
   }
 };
 
