@@ -12,33 +12,32 @@ beforeEach(function(){
 
 });
 
-describe("iterateOver", function() {
+describe("async helper functions", function(){
+ describe("iterateOver(array, iterator, callback)", function() {
 
-  it("should iterate over all array elements", function(done) {
+  it("should iterate over all array elements", function() {
     var array = ['a', 'b', 'c'];
-    var count = 0;
+    var results = [];
 
-    async.iterateOver(array, function iterator(val, callback){
-      count++;
-      callback();
+    async.iterateOver(array, function iterator(val, cb){
+      results.push(val);
+      cb();
     }, function(){});
 
-    expect(count).to.equal(array.length);
-    done();
+    expect(results).to.deep.equal(array);
   });
 
-  it("should invoke callback on each iteration", function(done) {
+  it("should invoke callback on each iteration", function() {
     var array = ['a', 'b', 'c'];
     var count = 0;
 
-    async.iterateOver(array, function iterator(val, callback){
-      callback();
-    }, function(){
+    async.iterateOver(array, function iterator(val, cb){
+      cb();
+    }, function callback(){
         count++;
     });
 
     expect(count).to.equal(array.length);
-    done();
   });
 
   it("should invoke callback on each iteration with index of item", function(done) {
@@ -50,20 +49,20 @@ describe("iterateOver", function() {
       expectedIx.push(i);
     }
 
-    async.iterateOver(array, function iterator(val, callback){
-      setTimeout(callback, Math.random() * 100);
-    }, function(ix){
+    async.iterateOver(array, function iterator(val, cb){
+      setTimeout(cb, Math.random() * 100);
+    }, function callback(ix){
        indixes.push(ix);
     });
 
     waitForThen(
-      function(){ return indixes.length === array.length; },
+      function(){ return indixes.length === expectedIx.length; },
       function(){
         indixes.sort();
-        expect(indixes).to.deep.equal([0,1,2]);
+        expect(indixes).to.deep.equal(expectedIx);
         done();
       }
     );
   });
-
+ });
 });
