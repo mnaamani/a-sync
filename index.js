@@ -1,4 +1,4 @@
-var async = {};
+var async = module.exports;
 
 async.iterateOver = function(array, iterator, callback) {
   for (var i = 0; i < array.length; i++) {
