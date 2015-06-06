@@ -80,3 +80,27 @@ async.detect = function(array, func, callback) {
     }
   });
 }
+
+async.series = function(tasks, callback) {
+  callback = callback || function(){};
+
+  var results = [];
+  var queue = tasks.slice();
+
+  function next(task){
+    if (!task) {
+      callback(null, results);
+    } else{
+      task(function(err, result){
+        if (err) {
+          callback(err);
+        } else {
+          results.push(result);
+          next(queue.shift());
+        }
+      });
+    }
+  }
+
+  next(queue.shift());
+};
