@@ -1,18 +1,13 @@
 var expect = require('chai').expect;
+var sinon = require('sinon');
 var async = require('../index.js');
-
-// Conditional async testing, akin to Jasmine's waitsFor()
-var waitForThen = function(test, cb) {
-  setTimeout(function() {
-    test() ? cb.apply(this) : waitForThen(test, cb);
-  }, 5);
-};
 
 beforeEach(function(){
 
 });
 
 describe("async helper functions", function(){
+
  describe("iterateOver(array, iterator, callback)", function() {
 
   it("should iterate over all array elements", function() {
@@ -40,10 +35,12 @@ describe("async helper functions", function(){
     expect(count).to.equal(array.length);
   });
 
-  it("should invoke callback on each iteration with index of item", function(done) {
+  it("should invoke callback on each iteration with index of item", function() {
     var array = ['a', 'b', 'c'];
     var indixes = [];
     var expectedIx = [];
+
+    var clock = sinon.useFakeTimers();
 
     for (var i = 0; i < array.length; i++) {
       expectedIx.push(i);
@@ -55,14 +52,13 @@ describe("async helper functions", function(){
        indixes.push(ix);
     });
 
-    waitForThen(
-      function(){ return indixes.length === expectedIx.length; },
-      function(){
-        indixes.sort();
-        expect(indixes).to.deep.equal(expectedIx);
-        done();
-      }
-    );
+    clock.tick(150);
+    clock.restore();
+
+    expect(indixes.length).to.equal(expectedIx.length);
+    indixes.sort();
+    expect(indixes).to.deep.equal(expectedIx);
+
   });
  });
 });
